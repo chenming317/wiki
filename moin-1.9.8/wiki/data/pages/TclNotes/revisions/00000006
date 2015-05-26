@@ -1,0 +1,23 @@
+== Daily used web link: ==
+ * [[http://172.26.12.51:8080/source/|OpenGrok]]
+ * [[http://172.16.11.162:8081/#/|GerritLink]]
+ * [[http://bugzilla.tcl-ta.com/|Bugzilla]]
+ * [[http://172.16.11.162:8080/gitweb-fast/gitweb-quicl/|Gitweb]]
+----
+How to download SW
+{{{
+sudo adb reboot bootloader
+sudo fastboot flash aboot emmc_appsboot.mbn
+sudo fastboot flash boot boot.img 
+sudo fastboot flash system system.img 
+sudo fastboot flash userdata userdata.img
+sudo fastboot flash cache cache.img
+sudo fastboot reboot
+}}}
+
+Some shortcut dial number
+{{{
+*#2886#   ==> Enter into MMITest
+*#3228#   ==> Check SW versoin
+###2324#  ==> DiagProtector Setting
+}}}

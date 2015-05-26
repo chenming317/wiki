@@ -1,0 +1,6 @@
+JOS
+
+{{{#!highlight python
+def hello():
+    print "Hello World!"
+}}}
