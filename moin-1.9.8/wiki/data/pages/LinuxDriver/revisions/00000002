@@ -1,0 +1,28 @@
+<<TableOfContents>>
+
+= Device Tree =
+
+The .dts & dtsi source files use C/C++ style #include to include other files, so we need to preprocess the source file first!
+{{{
+$  cpp -Wp,-MD,x.pre.tmp -nostdinc -I. -Iinclude  -undef -D__DTS__ -x assembler-with-cpp -o x.dts.tmp idol347/msm8916-mtp.dts
+}}}
+Then we can use dtc to compile the source file:
+{{{
+$ dtc -I dts -O dts -o x.dts x.dts.tmp
+}}}
+You can find dtc in the path similar to /home/hoperun/coky-share/l8936_old/out/target/product/idol347/obj/KERNEL_OBJ/scripts/dtc/dtc
+You  can also extract dts file from dtb, as to a full build project, *.dtb locate at this:
+{{{
+./target/product/idol347/obj/KERNEL_OBJ/arch/arm/boot/dts/msm8916-mtp-smb1360.dtb
+./target/product/idol347/obj/KERNEL_OBJ/arch/arm/boot/dts/msm8916-mtp.dtb
+}}}
+In order to extract the device tree node from the dts file, use lex [[attachment:lex_dts.l]] to handle this:
+
+then use the cmd:
+{{{
+then use the cmd:
+$ lex lex_dts.l
+$ gcc lex.yy.c -o analyse -ll
+$ ./analyse < x.dts > templog.txt
+}}}
+And you can check [[attachment:templog.txt]]

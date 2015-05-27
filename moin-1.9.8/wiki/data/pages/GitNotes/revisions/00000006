@@ -1,0 +1,78 @@
+<<TableOfContents>>
+= Git cmd =
+== Git config ==
+{{{
+$ git config --global user.name "John Doe"
+$ git config --global user.email johndoe@example.com
+$ git config --global core.editor emacs
+$ git config --global merge.tool vimdiff
+$ git config --list    # check config info
+$ git config user.name # check username config info
+}}}
+{{{
+/etc/gitconfig # --system 
+~/.gitconfig   # --global 
+.git/config    # default
+}}}
+== Create a git project ==
+{{{
+$ git init
+$ git add *.c
+$ git add README
+$ git commit -m 'initial project version'
+}}}
+== Clone a git project ==
+{{{
+$ git clone git://github.com/schacon/grit.git
+}}}
+== Track a file ==
+{{{
+$ git add README
+}}}
+== Stage a file ==
+{{{
+$ git add README
+}}}
+== Ignore some file ==
+{{{
+$ cat .gitignore
+*.[oa]
+*~
+}}}
+|| # || 此为注释 – 将被 Git 忽略 ||
+|| *.a || 忽略所有 .a 结尾的文件 ||
+|| !lib.a || 但 lib.a 除外 ||
+|| /TODO || 仅仅忽略项目根目录下的 TODO 文件,不包括 subdir/TODO ||
+|| build/ || 忽略 build/ 目录下的所有文件 ||
+|| doc/*.txt || 会忽略 doc/notes.txt 但不包括 doc/server/arch.txt ||
+== Git compare ==
+{{{
+$ git diff          #此命令比较的是工作目录中当前文件和暂存区域快照之间的差异,也就是修改之后还没有暂存起来的变化内容
+$ git diff --cached #此命令比较的是已经暂存起来的文件和上次提交时的快照之间的差异
+$ git diff --staged #..
+}}}
+== Git commit ==
+{{{
+$ git commit #提交更新
+$ git commit -m "Story 182: Fix benchmarks for speed" #记住,提交时记录的是放在暂存区域的快照,任何还未暂存的仍然保持已修改状态,可以在下次提交时纳入版本管理。
+                                                      #每一次运行提交操作,都是对你项目作一次快照,以后可以回到这个状态,或者进行比较。
+$ git commit -a -m 'added new benchmarks'             #在提交的时候,给git commit加上 -a 选项, Git 就会自动把所有已经跟踪过的文件暂存起来一并提交,从而跳过git add步骤.
+}}}
+== Git log ==
+{{{
+$ git log                  #查看提交历史
+$ git log –p -2            #我们常用 -p 选项展开显示每次提交的内容差异,用 -2 则仅显示最近的两次更新
+$ git log --stat           #此外,还有许多摘要选项可以用,比如--stat,仅显示简要的增改行数统计
+$ git log --pretty=oneline #还有个常用的--pretty选项,可以指定使用完全不同于默认格式的方式展示提交历史。比如用oneline将每个提交放在一行显示,这在提交数很大时非常有用.
+                           #另外还有short,full和fuller可以用,展示的信息或多或少有些不同
+$ git log --pretty=format:"%h - %an, %ar : %s"
+}}}
+== Git patch ==
+{{{
+$ git format-patch -1
+$ git am 0001-limit-log-function.patch
+
+$ git diff
+$ git apply /tmp/patch-ruby-client.patch
+}}}
+[[attachment:git_pro_cn.pdf]]

@@ -1,0 +1,7 @@
+<<TableOfContents>>
+= Device Tree =
+== Git patch ==
+{{{
+$ git format-patch -1
+$ git am 0001-limit-log-function.patch
+}}}

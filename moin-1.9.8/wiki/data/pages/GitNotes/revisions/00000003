@@ -1,0 +1,58 @@
+<<TableOfContents>>
+= Git cmd =
+== Git config ==
+{{{
+$ git config --global user.name "John Doe"
+$ git config --global user.email johndoe@example.com
+$ git config --global core.editor emacs
+$ git config --global merge.tool vimdiff
+$ git config --list    # check config info
+$ git config user.name # check username config info
+}}}
+{{{
+/etc/gitconfig # --system 
+~/.gitconfig   # --global 
+.git/config    # default
+}}}
+== Create a git project ==
+{{{
+$ git init
+$ git add *.c
+$ git add README
+$ git commit -m 'initial project version'
+}}}
+== Clone a git project ==
+{{{
+$ git clone git://github.com/schacon/grit.git
+}}}
+== Track a file ==
+{{{
+$ git add README
+}}}
+== Stage a file ==
+{{{
+$ git add README
+}}}
+== Ignore some file ==
+{{{
+$ cat .gitignore
+*.[oa]
+*~
+}}}
+|| # || 此为注释 – 将被 Git 忽略 ||
+|| *.a || 忽略所有 .a 结尾的文件 ||
+|| !lib.a || 但 lib.a 除外 ||
+|| /TODO || 仅仅忽略项目根目录下的 TODO 文件,不包括 subdir/TODO ||
+|| build/ || 忽略 build/ 目录下的所有文件 ||
+|| doc/*.txt || 会忽略 doc/notes.txt 但不包括 doc/server/arch.txt ||
+== Git compare ==
+{{{
+$ git diff #此命令比较的是工作目录中当前文件和暂存区域快照之间的差异,也就是修改之后还没有暂存起来的变化内容
+$ git diff --cached #此命令比较的是已经暂存起来的文件和上次提交时的快照之间的差异
+$ git diff --staged #..
+}}}
+== Git patch ==
+{{{
+$ git format-patch -1
+$ git am 0001-limit-log-function.patch
+}}}

@@ -1,0 +1,12 @@
+<<TableOfContents>>
+= Git cmd =
+== Git config ==
+{{{
+$ git config --global user.email "you@example.com"
+$ git config --global user.name "Your Name"
+}}}
+== Git patch ==
+{{{
+$ git format-patch -1
+$ git am 0001-limit-log-function.patch
+}}}

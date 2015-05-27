@@ -1,0 +1,119 @@
+<<TableOfContents>>
+= Daily used web link: =
+ * [[http://172.26.12.51:8080/source/|OpenGrok]]
+ * [[http://172.16.11.162:8081/#/|GerritLink]]
+ * [[http://bugzilla.tcl-ta.com/|Bugzilla]]
+ * [[http://172.16.11.162:8080/gitweb-fast/gitweb-quicl/|Gitweb]]
+{{{
+sudo adb reboot bootloader
+sudo fastboot flash aboot emmc_appsboot.mbn
+sudo fastboot flash boot boot.img
+sudo fastboot flash system system.img
+sudo fastboot flash userdata userdata.img
+sudo fastboot flash cache cache.img
+sudo fastboot reboot
+}}}
+
+= Shortcut dial number =
+{{{
+*#2886#   ==> Enter into MMITest
+*#3228#   ==> Check SW versoin
+###2324#  ==> DiagProtector Setting
+}}}
+
+= Build command =
+{{{
+make aboot     ==> make lk
+make bootimage ==> make kernel
+mm ./          ==> local make
+make snod      ==> pack system image
+}}}
+
+= Adb Debug =
+{{{
+$ lsusb
+Unknown line at line 11185
+Bus 001 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
+Bus 002 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 002 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 001 Device 009: ID 1bbb:f006 T & A Mobile Phones
+}}}
+
+If this message noticed, it means that cell phone '''run out of power'''!
+
+= Debug TP =
+
+== Check the device node ==
+{{{
+$ cat /proc/bus/input/devices
+}}}
+== Check the TP event ==
+{{{
+$ sudo adb shell cat /dev/input/event0 | hexdump
+}}}
+
+== TP in MMITest ==
+Please refer to [[http://172.16.11.162:8081/#/c/189608/|PR1011197]]
+{{{
+/l8936_hoperun/development/apps/MMITest/src/com/android/mmi/Firmware.java
+private String getTPFirmware()
+/l8936_hoperun/development/apps/MMITest/src/com/android/mmi/util/SysClassManager.java
+public static final String TP_FIRMWARE_FILE_ALTO5_PR_FT = "/sys/class/firmware_ver/device/firm_ver";
+}}}
+= Debug LED =
+== Check the LED node ==
+{{{
+$ sudo adb shell
+$ cd /sys/class/leds/led_G
+$ cd /sys/class/leds/led_G/brightness
+}}}
+== LED power off charger light ==
+{{{
+platform/system/core/healthd/healthd_mode_charger.cpp
+}}}
+There is a [[http://172.16.11.162:8081/#/c/187210/|PR1006458]] related to this issue.
+== LED power on light ==
+{{{
+hardware/qcom/display/liblight/lights.c
+}}}
+There is a [[http://172.16.11.162:8081/#/c/185596/|PR999693]] related to this issue.
+
+= Debugfs =
+{{{
+$ mount –t debugfs none sys/kernel/debug
+$ cd sys/kernel/debug/ion/
+}}}
+
+= Pull & Push code =
+== Android code ==
+{{{
+$ repo init -u git@172.26.3.9:quicl/manifests -m l8936_hoperun.xml
+$ repo sync
+}}}
+== AMSS code ==
+{{{
+$ git clone git@ningbo.gitweb.com:quicl/amss_8x36.git -b l8936_hoperun
+}}}
+== Deliver ==
+
+  When you fix a issue, you need to deliver your patch to the server. First of all, you should check the status in the current directory and make sure that everything should be committed. Then exe the cmd below:
+{{{
+$ python ~/patch_delivery_cli_gui.py
+$ git push ssh://ming.chen1@172.16.11.162:29418/quicl/kernel/msm-3.10.git HEAD:refs/for/l8936_hoperun
+}}}
+[[attachment:patch_delivery_cli_gui.py]]
+
+{{attachment:foto.jpg}}
+
+= Check BUILD ID =
+{{{
+/l8936_hoperun/amss_8x36/common/build/
+/l8936_hoperun/amss_8x36/contents.xml
+}}}
+
+GitNotes maybe helpful.
+
+LinuxDriver
