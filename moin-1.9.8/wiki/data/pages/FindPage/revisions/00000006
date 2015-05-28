@@ -1,0 +1,10 @@
+<<AdvancedSearch>>
+
+'''An index of all page titles'''
+<<TitleIndex>>
+
+'''list pages no other page links to.'''
+<<OrphanedPages>>
+
+'''List pages that were not edited for the longest time.'''
+<<AbandonedPages>>

@@ -1,0 +1,107 @@
+This page mainly to describe the MIB work that I did at SONY
+<<TableOfContents>>
+= MIB debug =
+== General Description ==
+=== Power ===
+PPC/Power consumption
+=== Performance ===
+Throughput/App ..
+#以上需要需要注意测试环境（网络参数设定，8475A的参数设定）是否与项目的要求匹配。
+=== Stability ===
+kernel panic/ANR/native crash/OOM/DVM abort/HWWD/SWWD
+== Work flow ==
+=== kerner panic/DVM abort ===
+常见的是非法地址访问，比如内存数据冲掉。。
+
+如果深入分析的结果是寄存器或memory的值有异常的改变，可能是L1 cache的问题，比如L1 cache供电不足等。 
+=== Native crash ===
+refer ro Docs: MIB_WORK\Native
+=== OOM ===
+refer to Docs: MIB_WORK\OOM
+=== Memory leak ===
+refer to https://wiki.sonyericsson.net/androiki/Aoba_ICS_MemoryLeak_Summary
+          How to get Hprof from crashdump? 
+=== HWWD ===
+refer to Docs: MIB_WORK\HWWD
+==== Check call stack ====
+bite: kstack
+
+bark: kbt -pc=0xc04f5b5c -sp=0xd9f0bc48
+==== Check RTB log ====
+==== Check rpm log ====
+rmp tools: MIB_WORK\Tools\rpm_tools
+{{{#!highlight python
+Usage:
+#rpm_log.exe RPM_MSG.bin > rpm.Ulog
+#python rpm_log.py -t 8960 -f rpm.Ulog > rpm.log
+}}}
+Check rpm.log if there is something wrong.
+qcom docs: [A] 80-N6955-1_D_RPM_UG.pdf Charpter 7 RPM Debug
+==== Check kernel log ====
+L1 / TLB Error detected 
+Infinite loop in some functions
+
+=== SWWD ===
+refer to :https://wiki.sonyericsson.net/androiki/Android_Software_Watchdog
+==== SysRq : Trigger a crash ====
+service servicemanager /system/bin/servicemanager
+
+onrestart write /proc/sysrq-trigger c
+
+service surfaceflinger /system/bin/surfaceflinger
+
+onrestart write /proc/sysrq-trigger c
+
+service zygote /system/bin/app_process -Xzygote /system/bin --zygote --start-system-server
+
+onrestart write /proc/sysrq-trigger c
+
+Force crash via a long press of the power button
+
+=== Crash dump ===
+==== Local analysis ====
+Use debuggy/crash tool to analysis crash dump:
+
+进入tlcore/productinfo所在目录
+{{{#!highlight python
+# Fetch symbol files and prepare crash workdir
+$ debuggy --crash tlcore
+# debuggy --crashpdf tlcore --> generate vmcore.pdf
+$ cd crash_workdir
+# Start crash
+$ crash vmcore vmlinux
+# Get summary to figure out crash reason
+crash> sum
+# Dump process so that it can be analyzed in gdb，mainly for user process
+crash> dump pid
+# Analyze callstack in gdb
+crash> quit
+$ gdb_arm -x gdbcmds_<pid>
+(gdb-arm) bt
+}}}
+==== goobug analysis ===
+对于official build的版本，也可以自己上传文件到goobug分析
+进入http://goobug.sonyericsson.net/crashdata/
+将productinfo、ramdumpinfo、tlcore打包上传，一段时间后，goobug会email通知分析的结果
+==== Private build analysis ====
+对于private build的版本，需要首先执行以下的命令来创建相应的符号表,接着就可以按正常的流程分析
+
+refer to: https://wiki.sonyericsson.net/mib/Debuggy
+{{{#!highlight python
+$ debuggy --local-fetch <private label> <product> <variant> <apps build> <amss build>
+# eg: 
+# Only application side changed:
+$ debuggy --local-fetch private dogo userdebug ~/kk-lagan/sourcecode 10.5.A.0.230
+# Only amss side changed:
+$ debuggy --local-fetch private dogo userdebug 10.5.A.0.230 ~/kk-lagan/amsscode
+# Both amss and application side changed:
+$ debuggy --local-fetch private dogo userdebug ~/kk-lagan/sourcecode ~/kk-lagan/amsscode
+}}}
+==== Usefully commands ====
+{{{#!highlight python
+struct
+list
+p timekeeper
+p *cpu_online_mask
+}}}
+refer to Docs: MIB_WORK\Tools\Training

@@ -1,0 +1,225 @@
+This page mainly to describe the MIB work that I did at SONY
+<<TableOfContents>>
+= MIB debug =
+== General Description ==
+=== Power ===
+ * PPC/Power consumption
+=== Performance ===
+ * Throughput/App
+  以上需要需要注意测试环境（网络参数设定，8475A的参数设定）是否与项目的要求匹配。
+=== Stability ===
+ * kernel panic/ANR/native crash/OOM/DVM abort/HWWD/SWWD
+== Work flow ==
+=== Kerner panic/DVM abort ===
+ * 常见的是非法地址访问，比如内存数据冲掉。如果深入分析的结果是寄存器或memory的值有异常的改变，可能是L1 cache的问题，比如L1 cache供电不足等。 
+=== Native crash ===
+ * Refer ro Docs: MIB_WORK\Native
+=== OOM ===
+ * Refer to Docs: MIB_WORK\OOM
+=== Memory leak ===
+ * Refer to https://wiki.sonyericsson.net/androiki/Aoba_ICS_MemoryLeak_Summary
+
+ * How to get Hprof from crashdump? 
+=== HWWD ===
+ * Refer to Docs: MIB_WORK\HWWD
+==== Check call stack ====
+ * Bite: kstack
+ * Bark: kbt -pc=0xc04f5b5c -sp=0xd9f0bc48
+==== Check RTB log ====
+==== Check rpm log ====
+ * Rmp tools: MIB_WORK\Tools\rpm_tools
+{{{#!highlight python
+Usage:
+#rpm_log.exe RPM_MSG.bin > rpm.Ulog
+#python rpm_log.py -t 8960 -f rpm.Ulog > rpm.log
+}}}
+ * Check rpm.log if there is something wrong.
+ * Qcom docs: [A] 80-N6955-1_D_RPM_UG.pdf Charpter 7 RPM Debug
+==== Check kernel log ====
+ * L1 / TLB Error detected 
+ * Infinite loop in some functions
+=== SWWD ===
+ * Refer to :https://wiki.sonyericsson.net/androiki/Android_Software_Watchdog
+==== SysRq : Trigger a crash ====
+ * service servicemanager /system/bin/servicemanager
+
+   onrestart write /proc/sysrq-trigger c
+
+ * service surfaceflinger /system/bin/surfaceflinger
+
+   onrestart write /proc/sysrq-trigger c
+
+ * service zygote /system/bin/app_process -Xzygote /system/bin --zygote --start-system-server
+
+   onrestart write /proc/sysrq-trigger c
+
+ * Force crash via a long press of the power button
+
+=== Crash dump ===
+==== Local analysis ====
+ * Use debuggy/crash tool to analysis crash dump
+   进入tlcore/productinfo所在目录，执行以下操作：
+{{{#!highlight python
+# Fetch symbol files and prepare crash workdir
+$ debuggy --crash tlcore
+# debuggy --crashpdf tlcore --> generate vmcore.pdf
+$ cd crash_workdir
+# Start crash
+$ crash vmcore vmlinux
+# Get summary to figure out crash reason
+crash> sum
+# Dump process so that it can be analyzed in gdb，mainly for user process
+crash> dump pid
+# Analyze callstack in gdb
+crash> quit
+$ gdb_arm -x gdbcmds_<pid>
+(gdb-arm) bt
+}}}
+==== Goobug analysis ====
+ * 对于official build的版本，也可以自己上传文件到goobug分析
+
+   进入http://goobug.sonyericsson.net/crashdata/, 将productinfo、ramdumpinfo、tlcore打包上传，一段时间后，goobug会email通知分析的结果。
+==== Private build analysis ====
+ * 对于private build的版本，需要首先执行以下的命令来创建相应的符号表,接着就可以按正常的流程分析
+
+   Refer to: https://wiki.sonyericsson.net/mib/Debuggy
+{{{#!highlight python
+$ debuggy --local-fetch <private label> <product> <variant> <apps build> <amss build>
+# eg: 
+# Only application side changed:
+$ debuggy --local-fetch private dogo userdebug ~/kk-lagan/sourcecode 10.5.A.0.230
+# Only amss side changed:
+$ debuggy --local-fetch private dogo userdebug 10.5.A.0.230 ~/kk-lagan/amsscode
+# Both amss and application side changed:
+$ debuggy --local-fetch private dogo userdebug ~/kk-lagan/sourcecode ~/kk-lagan/amsscode
+}}}
+==== Usefully commands ====
+{{{#!highlight python
+struct
+list
+p timekeeper
+p *cpu_online_mask
+}}}
+ * Refer to Docs: MIB_WORK\Tools\Training
+
+= MTBF =
+== General ==
+ * MTBF(Mean Time Between Failure) mapping:
+  * Check whether there is crash issues.
+  * Check whether the crash dump file is available or not, if not , sent mail to request log ASAP.
+  * If the crash happened in test phone, please mark it as Test phone. FIFA/Monkey, etc.
+  * Analyze the crash issue, refer to MIB debug.
+  * Identify the root cause of the crash issue. Search the key word in FFS to check whether it has happened earlier.
+  * If the crash issue happened before in the same project,you can map to the same DMS directly, and remember to modify the notes of the DMS to tell the owner that the same issue reproduced.
+  * If the crash issue never happened before, you should raise a new DMS to track this issue. Please refer the DOC for detail.
+ * Refer to Docs：MIB_WORK\MTBF
+
+{{{#!highlight python
+Bugreport  --\
+              > ----> PCC/FG3 ---> Inbox ---> Goobug 
+Crash dump --/                                 |
+                                               |
+      CrashSMS(3~5K)              import       V
+Phone ---------------->  MTBF DB  ------->  Web CrashTool
+      data/crashsms/crash.txt
+}}}
+
+== Usefull links ==
+ * IMEI search info:
+
+   http://seldapp113.corpusers.net/ReportServer/Pages/ReportViewer.aspx?%2fDoors_Reports%2fFG_GetInfoByIMEI
+
+ * kk-lagan system crash mapping record:
+
+   http://note.youdao.com/share/?id=26ce08aeb70aa0584739cd905bfb8ed5&type=notebook
+
+== General crash type ==
+{{{#!highlight python
+SYSTEM("SystemCrash", 1)
+APPLICATION("ApplicationCrash", 2)
+LOG_E("LogECrash", 6)
+UNKNOWN("UnknownCrash", 6)
+JAVA_HANG("JavaHangCrash", 7)
+THIRD_PARTY("ThirdPartyCrash", 8)
+CORRUPT_TA("CorruptTaCrash", 10)
+MODEM("ModemCrash", 11)
+HW_RESET("HwResetCrash", 12)
+SYSRQ_TRIGGER("SysRqTriggerCrash", 12)
+}}}
+
+= Vendor Integration =
+ * CM拉出一个临时分支，在这个分支上做VI
+ * CM会首先会auto merge所有的git，如果出现conflict的git, 会列出来，由MIB来手动merge. 这一步的工作量比较大。有些MIB不清楚的问题，还需要和相应的FAT沟通。对于这些gerrit link，还需要相应的FAT来review。
+ * 所有git merge完后，需要本地编译每个手机的版本来验证。这个过程中会出现编译错误，或者编译过了，但是不能开机等情况，需要看log分析。
+ * 如果本地编译基本功能都OK, 需要CM编译版本给测试做详细测试。
+ * 如果测试的结果也没有downgrade的话，这时就可以merge back到正式的branch上
+{{{
+local <-----> base <-----> remote
+         |            |
+         |            |
+          \__________/
+               |
+               V
+             Final
+}}}
+== General tips ==
+ * prepare git mergetool(use bcompare as mergetool) [optional]
+   Here are steps to launch bcompare tool in 'git mergetool' (replace default tool 'meld')
+{{{#!highlight python
+$ wget -P /tmp http://seldlnxdist.sonyericsson.net/extra/beyond_compare/install_beyond_compare.sh
+$ chmod 744 /tmp/install_beyond_compare.sh
+$ sudo sh /tmp/install_beyond_compare.sh
+}}}
+   Add below lines into your ~/.gitconfig
+{{{#!highlight python
+[diff]
+        tool = bc3
+[difftool "bc3"]
+        cmd = bcompare $LOCAL $REMOTE
+[difftool]
+        prompt = false
+[merge]
+        tool = bc3
+[mergetool "bc3"]
+        cmd = bcompare $LOCAL $REMOTE $BASE $MERGED
+        trustExitCode = true
+}}}
+
+== Sync code ==
+{{{#!highlight python
+repo init -u git://review.sonyericsson.net/platform/manifest -b kk-lagan-qcom-int
+repo sync
+}}}
+== Merge conflict gits ==
+{{{#!highlight python
+$ git merge refs/tags/LNX.LA.2.7-04110-8064.0 -v --log --no-ff --stat -m  "Merge 'LNX.LA.2.7-04110-8064.0' into kk-lagan-qcom-int"
+$ git mergetool
+$ git clean -fdx
+$ git commit
+$ git push origin HEAD:refs/for/kk-lagan-qcom-int
+}}}
+== Manual debug ==
+{{{#!highlight python
+$ gedit XX
+$ git clean -fdx
+$ git add .
+$ git commit --amend
+$ git push origin HEAD:refs/changes/767291
+}}}
+== Revert patch ==
+ * 主要是有些bug qcom有patch, 一般会revert 我们自己的patch, 以减少以后VI的conflict.
+{{{#!highlight python
+$ git revert commit-id
+$ git push origin HEAD:refs/for/kk-lagan-qcom-int
+}}}
+ * Notes: 对于Sony/Qcom对同一个文件同时有修改的情况，一般是sony的修改加在Qcom的修改后面。
+== Cherry pick ==
+ * Maybe need some other patches
+{{{#!highlight python
+git cherry-pick -ex 06e880d8c559f2149cdddc25446a01efc3656e77   //cherry pick
+git push origin  HEAD:refs/for/kk-lagan-qcom-int
+}}}
+== Merge back ==
+{{{#!highlight python
+$ git merge remotes/origin/kk-lagan-qcom-int  -v --log --no-ff --stat -m  "mergeback 'LNX.LA.2.7-04110-8064.0' into kk-lagan"
+}}}

@@ -1,0 +1,47 @@
+= Acronym =
+ * CDT: Configuration Data Table
+ * BLSP: Bus access module (BAM) based low-speed  peripheral (BLSP)
+ * QUP: 
+ * QCT: Qualcomm CDMA Technologies
+ * CP: coprocessor
+ * AP:Application Processo
+ * CCI: Camera control interface
+ * I2C: Inter－Integrated Circuit
+ * TLMM: Top-level mode multiplexer
+ * MIPI: Mobile Industry Processor Interface
+ * MDSS: Mobile Display Subsystem
+ * DSI: Display Serial Interface
+ * DBI: Display Bus Interface
+ * DCS: Display Command Set
+ * HSA: Horizontal sync active mode
+ * QPNP: Qualcomm Technologies Plug N Play
+ * WLED: White Light Emitting Diode
+ * MTP: Modem Test Platform
+ * CDP: Core Development Platform
+ * QTI: Qualcomm Technologies, Inc
+ * eMMC: Embedded Multimedia Card
+ * MBR: Master Boot Record
+ * AMSS: Advanced Mobile Subscriber Software
+ * MPSS: Modem Processor Subsystem
+ * SPI: Serial Peripheral Interface Bus
+ * QSEE: Qualcomm secure execution environment
+ * HLOS: High-Level Operating System kernel  
+ * HYP: Hypervisor Image
+ * Modem PBL: Modem Primary Boot Loader
+ * MBA: Modem Boot Authenticator
+ * SDI: System Debug Image
+ * SMC: Secure monitor call
+ * GUID: Globally Unique Identifier Partition Table  (GPT) 
+ * SCM: Secure Channel Manager
+ * VBPD: (vertical back porch)表示在一帧图像开始时，垂直同步信号以后的无效的行数
+ * VFBD: (vertical front porch)表示在一帧图像结束后，垂直同步信号以前的无效的行数VSPW(vertical sync pulse width)：表示垂直同步脉冲的宽度，用行数计算
+ * HBPD: (horizontal back porch)表示从水平同步信号开始到一行的有效数据开始之间的VCLK的个数HFPD(horizontal front porth)：表示一行的有效数据结束到下一个水平同步信号开始之间的VCLK的个数
+ * HSPW: (horizontal sync pulse width)表示水平同步信号的宽度，用VCLK计算
+ * LVDS: Low Voltage Differential Signaling
+ * eDP: Embedded Display Port
+ * EL: exception level
+ * BSP: Board support package
+ * DTS: Device tree source
+ * SSC: SnapdragonTM Sensors Core
+ * ALS: Ambient light sensor
+ * LPG: Light Pulse Generator
