@@ -1,0 +1,179 @@
+<<TableOfContents>>
+= Daily used web link =
+ * [[http://172.26.12.51:8080/source/|OpenGrok]]
+ * [[http://172.16.11.162:8081/#/|GerritLink]]
+ * [[http://bugzilla.tcl-ta.com/|Bugzilla]]
+ * [[http://172.16.11.162:8080/gitweb-fast/gitweb-quicl/|Gitweb]]
+{{{#!highlight python
+sudo adb reboot bootloader
+sudo fastboot flash aboot emmc_appsboot.mbn
+sudo fastboot flash boot boot.img
+sudo fastboot flash system system.img
+sudo fastboot flash userdata userdata.img
+sudo fastboot flash cache cache.img
+sudo fastboot reboot
+}}}
+
+= Shortcut dial number =
+{{{#!highlight python
+*#2886#   ==> Enter into MMITest
+*#3228#   ==> Check SW versoin
+###2324#  ==> DiagProtector Setting
+}}}
+
+= Build command =
+{{{#!highlight python
+make aboot     ==> make lk
+make bootimage ==> make kernel
+mm ./          ==> local make
+make snod      ==> pack system image
+}}}
+
+= Adb Debug =
+{{{#!highlight python
+$ lsusb
+Unknown line at line 11185
+Bus 001 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
+Bus 002 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 002 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 001 Device 009: ID 1bbb:f006 T & A Mobile Phones
+}}}
+
+If this message noticed, it means that cell phone '''run out of power'''!
+
+= Debug TP =
+
+== Check the device node ==
+{{{#!highlight python
+$ cat /proc/bus/input/devices
+}}}
+== Check the TP event ==
+{{{#!highlight python
+$ sudo adb shell cat /dev/input/event0 | hexdump
+}}}
+
+== TP in MMITest ==
+Please refer to [[http://172.16.11.162:8081/#/c/189608/|PR1011197]]
+{{{#!highlight python
+/l8936_hoperun/development/apps/MMITest/src/com/android/mmi/Firmware.java
+private String getTPFirmware()
+/l8936_hoperun/development/apps/MMITest/src/com/android/mmi/util/SysClassManager.java
+public static final String TP_FIRMWARE_FILE_ALTO5_PR_FT = "/sys/class/firmware_ver/device/firm_ver";
+}}}
+= Debug LED =
+== Check the LED node ==
+{{{#!highlight python
+$ sudo adb shell
+$ cd /sys/class/leds/led_G
+$ cd /sys/class/leds/led_G/brightness
+}}}
+== LED power off charger light ==
+{{{#!highlight python
+platform/system/core/healthd/healthd_mode_charger.cpp
+}}}
+There is a [[http://172.16.11.162:8081/#/c/187210/|PR1006458]] related to this issue.
+== LED power on light ==
+{{{#!highlight python
+hardware/qcom/display/liblight/lights.c
+}}}
+There is a [[http://172.16.11.162:8081/#/c/185596/|PR999693]] related to this issue.
+
+= Debug key =
+{{{#!highlight python
+/l8936_hoperun/kernel/arch/arm/boot/dts/pop355/msm8916-mtp.dtsi                                       #Define the node
+/l8936_hoperun/kernel/drivers/input/keyboard/gpio_keys.c                                              #The key driver
+/l8936_hoperun/frameworks/base/policy/src/com/android/internal/policy/impl/PhoneWindowManager.java    #Handler the key evnet
+/sys/devices/soc.0/gpio_keys.66/                                                                      #Adb check status
+}}}
+= Debugfs =
+{{{#!highlight python
+$ mount –t debugfs none sys/kernel/debug
+$ cd sys/kernel/debug/ion/
+}}}
+
+= Pull & Push code =
+== Android code ==
+{{{#!highlight python
+$ repo init -u git@172.26.3.9:quicl/manifests -m l8936_hoperun.xml
+$ repo sync
+}}}
+== AMSS code ==
+{{{#!highlight python
+$ git clone git@ningbo.gitweb.com:quicl/amss_8x36.git -b l8936_hoperun
+}}}
+== Deliver ==
+
+  When you fix a issue, you need to deliver your patch to the server. First of all, you should check the status in the current directory and make sure that everything should be committed. Then exe the cmd below:
+{{{#!highlight python
+$ python ~/patch_delivery_cli_gui.py
+$ git push ssh://ming.chen1@172.16.11.162:29418/quicl/kernel/msm-3.10.git HEAD:refs/for/l8936_hoperun
+}}}
+[[attachment:patch_delivery_cli_gui.py]]
+
+{{attachment:foto.jpg}}
+
+= Check BUILD ID =
+{{{#!highlight python
+/l8936_hoperun/amss_8x36/common/build/
+/l8936_hoperun/amss_8x36/contents.xml
+}}}
+
+= m823_orange =
+{{{
+SPM : ma gui li 8791
+VPM : wu di 
+UE : hu bin
+VAL : n/A
+Integration : fan yi 684
+perso : cai hai li
+wu xia pei : (负责克隆BUG到ALM)
+}}}
+
+How to check the build version
+{{{
+http://172.16.11.162:8080/gitweb-fast/gitweb-quicl/
+[manifests.git] / ver / m823_orange / 
+0 --- means weekly version
+1/2 ---- means daily version
+}}}
+
+Download 特定版本 code
+{{{
+repo init -u git@172.26.3.9:quicl/manifests -m ver/m823_orange/m823_orange_l8936_v3C16_0.xml
+}}}
+= Adb over WIFI =
+{{{
+在不能直接使用USB连上手机的情况下，可以使用WIFI连接手机进入adb调试：
+1. 临时使用：
+1. 手机 & PC 连上 AP，确保两者能正常分配IP， 使用命令ifconfig (PC & 手机). ping 一下验证互通。
+2. USB 连上手机， 确保 adb devices 能够找到手机
+3. adb tcpip xxxx (xxxx为端口号，如5555)， 开启手机网络端口(为WIFI连接使用)
+4. 断开手机与PC的USB连接，接着运行
+> adb connect xxx.xxx.xxx.xxx:xxxx
+如adb connect 192.168.31.1:5555 提示connected即为连接成功。
+5. 此时用adb devices可以看到WIFI连接下的手机。
+6. 用 adb shell 命令开始调试
+7. 断开连接， 手机关闭或重启会自动断开网络连接；出此之外，还有其他的断开方法：
+1) adb disconnect 192.168.31.1 命令
+2) kill adb server
+
+2. 经常使用：
+如果经常使用，可以修改手机的配置文件来减去每此调试都要手动连接WIFI的麻烦，方法如下：
+修改手机的/system/build.prop:
+增加一行： service.adb.tcp.port = 5555 (也可以是其他端口)。这样就不需要每次先用USB线连上adb设置端口了。如果手机上无法获得修改权限，可以使用如下方法：
+先把 build.prop文件从手机中pull出来。命令如下：
+1.> adb pull /system/build.prop ./
+2. 在PC上修改build.prop
+3. 用 adb push 命令把修改过来的文件push到手机里(注意存放路径不能错)
+> adb push ./build.prop /system/
+如果不能push,可先用 adb remount 命令打开手机权限，在push
+> adb remount
+
+}}}
+
+GitNotes maybe helpful.
+
+LinuxDriver
