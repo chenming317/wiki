@@ -1,0 +1,5 @@
+= Acronym =
+ * MIME: Multipurpose Internet Mail Extensions 多用途互联网邮件扩展是一个互联网标准，它扩展了电子邮件标准，使其能够支持非ASCII字符、二进制格式附件等多种格式的邮件消息。
+
+= C++ =
+[[http://blog.jobbole.com/87586/ | 标准模板库（STL）使用入门（上）]]

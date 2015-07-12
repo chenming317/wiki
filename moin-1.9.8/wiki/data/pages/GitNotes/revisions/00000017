@@ -1,0 +1,280 @@
+<<TableOfContents>>
+= Git command =
+== Basic Topic ==
+=== Git config ===
+{{{#!highlight python
+$ git config --global user.name "John Doe"
+$ git config --global user.email johndoe@example.com
+$ git config --global core.editor emacs
+$ git config --global merge.tool vimdiff
+$ git config --list    # check config info
+$ git config user.name # check username config info
+}}}
+{{{#!highlight python
+/etc/gitconfig # --system 
+~/.gitconfig   # --global 
+.git/config    # default
+}}}
+=== Create a git project ===
+{{{#!highlight python
+$ git init
+$ git add *.c
+$ git add README
+$ git commit -m 'initial project version'
+}}}
+=== Clone a git project ===
+{{{#!highlight python
+$ git clone git://github.com/schacon/grit.git
+}}}
+=== Track a file ===
+{{{#!highlight python
+$ git add README
+}}}
+=== Stage a file ===
+{{{#!highlight python
+$ git add README
+}}}
+=== Ignore some file ===
+{{{#!highlight python
+$ cat .gitignore
+*.[oa]
+*~
+}}}
+|| # || 此为注释 – 将被 Git 忽略 ||
+|| *.a || 忽略所有 .a 结尾的文件 ||
+|| !lib.a || 但 lib.a 除外 ||
+|| /TODO || 仅仅忽略项目根目录下的 TODO 文件,不包括 subdir/TODO ||
+|| build/ || 忽略 build/ 目录下的所有文件 ||
+|| doc/*.txt || 会忽略 doc/notes.txt 但不包括 doc/server/arch.txt ||
+=== Git compare ===
+{{{#!highlight python
+$ git diff          #此命令比较的是工作目录中当前文件和暂存区域快照之间的差异,也就是修改之后还没有暂存起来的变化内容
+$ git diff --cached #此命令比较的是已经暂存起来的文件和上次提交时的快照之间的差异
+$ git diff --staged #..
+}}}
+=== Git clean ===
+{{{#!highlight python
+$ git clean -df
+}}}
+=== Git commit ===
+{{{#!highlight python
+$ git commit                                          #提交更新
+$ git commit -m "Story 182: Fix benchmarks for speed" #记住,提交时记录的是放在暂存区域的快照,任何还未暂存的仍然保持已修改状态,可以在下次提交时纳入版本管理。
+                                                      #每一次运行提交操作,都是对你项目作一次快照,以后可以回到这个状态,或者进行比较。
+$ git commit -a -m 'added new benchmarks'             #在提交的时候,给git commit加上 -a 选项, Git 就会自动把所有已经跟踪过的文件暂存起来一并提交,从而跳过git add步骤.
+}}}
+=== Git log ===
+{{{#!highlight python
+$ git log                  #查看提交历史
+$ git log –p -2            #我们常用 -p 选项展开显示每次提交的内容差异,用 -2 则仅显示最近的两次更新
+$ git log --stat           #此外,还有许多摘要选项可以用,比如--stat,仅显示简要的增改行数统计
+$ git log --pretty=oneline #还有个常用的--pretty选项,可以指定使用完全不同于默认格式的方式展示提交历史。比如用oneline将每个提交放在一行显示,这在提交数很大时非常有用.
+                           #另外还有short,full和fuller可以用,展示的信息或多或少有些不同
+$ git log --pretty=format:"%h - %an, %ar : %s"
+}}}
+|| %H || 提交对象(commit)的完整哈希字串 ||
+|| %h || 提交对象的简短哈希字串 ||
+|| %T || 树对象(tree)的完整哈希字串 ||
+|| %t || 树对象的简短哈希字串 ||
+|| %P || 父对象(parent)的完整哈希字串 ||
+|| %p || 父对象的简短哈希字串 ||
+|| %an || 作者(author)的名字 ||
+|| %ae || 作者的电子邮件地址 ||
+|| %ad || 作者修订日期(可以用 -date= 选项定制格式) ||
+|| %ar || 作者修订日期,按多久以前的方式显示 ||
+|| %cn || 提交者(committer)的名字 ||
+|| %ce || 提交者的电子邮件地址 ||
+|| %cd || 提交日期 ||
+|| %cr || 提交日期,按多久以前的方式显示 ||
+|| %s || 提交说明 ||
+{{{#!highlight python
+$ gitk  #...
+$ gitg  #图形界面
+}}}
+=== Change latest commit ===
+{{{#!highlight python
+$ git commit --amend #此命令将使用当前的暂存区域快照提交。如果刚才提交完没有作任何改动,直接运行此命令的话,相当于有机会重新编辑提交说明,而所提交的文件快照和之前的一样。
+
+$ git commit -m 'initial commit'   #\
+$ git add forgotten_file           # > 上面的三条命令最终得到一个提交,第二个提交命令修正了第一个的提交内容。
+$ git commit --amend               #/
+}}}
+=== Recovery files ===
+{{{#!highlight python
+$ git reset HEAD <file>...   #取消已经暂存的文件
+$ git checkout -- <file>...  #取消对文件的修改
+}}}
+=== Git patch ===
+{{{#!highlight python
+$ git format-patch -1
+$ git am 0001-limit-log-function.patch
+
+$ git diff
+$ git apply /tmp/patch-ruby-client.patch
+
+#git am fail, try this!
+$git am '/home/hoperun/0001-git-test.patch'
+$git status
+$git apply --reject '/home/hoperun/0001-git-test.patch'
+#手动修改有冲突的文件
+$git status
+$git clean -fdx
+$git status
+$git add .
+$git am --resolved 
+}}}
+
+=== Repository ===
+{{{#!highlight python
+$ git remote                                                 #...
+$ git remote -v                                              #查看当前的远程库
+
+$ git remote add [shortname] [url]                           #...
+$ git remote add pb git://github.com/paulboone/ticgit.git    #添加远程仓库
+
+$ git fetch [remote-name]                                    #从远程仓库抓取数据. 有一点很重要,需要记住,fetch 命令只是将远端的数据拉到本地仓库,并不自动合并到当前工作分支,只有当你确实准备好了,才能手工合并。
+                                                             #如果设置了某个分支用于跟踪某个远端仓库的分支(参见下节及第三章的内容),可以使用git pull命令自动抓取数据下来,然后将远端分支自动合并到本地仓库中当前分支。
+                                                             #在日常工作中我们经常这么用,既快且好。实际上,默认情况下git clone命令本质上就是自动创建了本地的 master 分支用于跟踪远程仓库中的 master 分支(假设远
+                                                             #程仓库确实有 master 分支)。所以一般我们运行git pull,目的都是要从原始克隆的远端仓库中抓取数据后,合并到工作目录中当前分支。
+
+$ git push [remote-name] [branch-name]                       #推送数据到远程仓库
+$ git push origin master
+
+$ git remote show [remote-name]                              #查看远程仓库信息
+
+$ git remote rename pb paul                                  #远程仓库的删除和重命名
+$ git remote rm paul
+}}}
+=== Git tag ===
+{{{#!highlight python
+$ git tag -a v1.4 -m 'my version 1.4'   #含附注的标签
+$ git show v1.4
+
+$ git tag v1.4-lw                       #轻量级标签
+$ git show v1.4-lw
+
+$ git tag -a v1.2 9fceb02               #后期加注标签
+
+$ git push origin v1.5                  #分享标签默认情况下,git push并不会把标签传送到远端服务器上,只有通过显式命令才能分享标签到远端仓库。其
+                                        #命令格式如同推送分支,运行git push origin [tagname]即可:如果要一次推送所有(本地新增的)标签上去,可以使用 --tags 选项:
+$ git push origin --tags
+}}}
+== Advance Topic ==
+=== Git alias ===
+{{{#!highlight python
+$ git config --global alias.co checkout
+$ git config --global alias.br branch
+$ git config --global alias.ci commit
+$ git config --global alias.st status
+$ git config --global alias.unstage 'reset HEAD --'
+$ git config --global alias.last 'log -1 HEAD'
+$ git config --global alias.visual "!gitk"
+}}}
+=== Git branch ===
+{{{#!highlight python
+$ git branch testing       #创建一个新的分支
+$ git checkout testing     #要切换到其他分支,可以执行git checkout命令
+
+$ git checkout -b iss53    #Switched to a new branch "iss53"
+
+$ git branch iss53         #相当于下面这两条命令
+$ git checkout iss53       #
+
+$ git branch -d hotfix     #git branch 的-d 选项表示删除
+Deleted branch hotfix (3a0874c).
+$ git branch -D hotfix     #可以用大写的删除选项-D强制执行
+
+$ git branch               #给出当前所有分支的清单
+$ git branch -v            #若要查看各个分支最后一次 commit 信息,运行git branch -v:
+}}}
+=== Git merge ===
+{{{#!highlight python
+$ git merge iss53          #Git 作了合并,但没有提交,它会停下来等你解决冲突。要看看哪些文件在合并时发生冲突,可以用status git查阅
+Auto-merging index.html
+CONFLICT (content): Merge conflict in index.html  
+[master*]$ git status
+index.html: needs merge
+$ git mergetool
+}}}
+
+=== Rebase ===
+Rebase(衍合)它的原理是回到两个分支(你所在的分支和你想要衍合进去的分支)的共同祖先,提取你所在分支每次提交时产生的差异(diff),把这些差异分别保存到临时文件里,然后从当前分支转换到你需要衍合入的分支,依序施用每一个差异补丁文件.
+{{{#!highlight python
+$ git rebase --onto master server client   #这基本上等于在说“检出 client 分支,找出client分支和server分支的共同祖先之后的变化,然后把它们在master上重演一遍”.
+$ git checkout master                      #现在可以快进 master 分支了
+$ git merge client
+$ git branch -d client
+}}}
+'''永远不要衍合那些已经推送到公共仓库的更新'''
+=== cherry-pick ===
+{{{#!highlight python
+$ git cherry-pick e43a6fd3e94888d76779ad79fb568ed180e5fcdf
+}}}
+=== Data recovery ===
+{{{#!highlight python
+$ git log --pretty=oneline                                                    #首先查看一下当前的仓库状态
+ab1afef80fac8e34258ff41fc1b867c702daa24b modified repo a bit
+484a59275031909e19aadb7c92262719cfcdf19a added repo.rb
+1a410efbd13591db07496601ebc7a059dd55cfe9 third commit
+cac0cab538b970a37ea1e769cbbde608743bc96d second commit
+fdf4fc3344e67ab068f836878b6c4951e3b15f3d first commit
+
+$ git reset --hard 1a410efbd13591db07496601ebc7a059dd55cfe9                   #接着将master分支移回至中间的一个 commit
+HEAD is now at 1a410ef third commit
+
+$ git log --pretty=oneline
+1a410efbd13591db07496601ebc7a059dd55cfe9 third commit
+cac0cab538b970a37ea1e769cbbde608743bc96d second commit
+fdf4fc3344e67ab068f836878b6c4951e3b15f3d first commit
+
+$ git reflog                                                                  #可以看到我们签出的两个 commit ,但没有更多的相关信息。运行 git log -g 会输出 reflog 的正常日志从而显示更多有用信息
+1a410ef HEAD@{0}: 1a410efbd13591db07496601ebc7a059dd55cfe9: updating HEAD
+ab1afef HEAD@{1}: ab1afef80fac8e34258ff41fc1b867c702daa24b: updating HEAD
+
+$ git log -g
+commit 1a410efbd13591db07496601ebc7a059dd55cfe9
+Reflog: HEAD@{0} (Scott Chacon <schacon@gmail.com>)
+Reflog message: updating HEAD
+Author: Scott Chacon <schacon@gmail.com>
+Date:  Fri May 22 18:22:37 2009 -0700
+    third commit
+
+commit ab1afef80fac8e34258ff41fc1b867c702daa24b
+Reflog: HEAD@{1} (Scott Chacon <schacon@gmail.com>)
+Reflog message: updating HEAD
+Author: Scott Chacon <schacon@gmail.com>
+Date:  Fri May 22 18:15:24 2009 -0700
+    modified repo a bit
+
+$ git branch recover-branch ab1afef
+$ git log --pretty=oneline recover-branch                                   #这样有了一个跟原来 master 一样的 recover-branch 分支,最新的两个 commit 又找回来了
+ab1afef80fac8e34258ff41fc1b867c702daa24b modified repo a bit
+484a59275031909e19aadb7c92262719cfcdf19a added repo.rb
+1a410efbd13591db07496601ebc7a059dd55cfe9 third commit
+cac0cab538b970a37ea1e769cbbde608743bc96d second commit
+fdf4fc3344e67ab068f836878b6c4951e3b15f3d first commit
+
+$ git branch –D recover-branch                                              #假设引起 commit 丢失的原因并没有记录在 reflog 中,可以通过删除 recover-branch 和 reflog 来模拟这种情况
+$ rm -Rf .git/logs/
+
+$ git fsck --full                                                           #使用 git fsck 工具,该工具会检查仓库的数据完整性.如果指定 --ful 选项,该命令显示所有未被其他对象引用 (指向) 的所有对象
+dangling blob d670460b4b4aece5915caf5c68d12f560a9fe3e4
+dangling commit ab1afef80fac8e34258ff41fc1b867c702daa24b
+dangling tree aea790b9a58f6cf6f2804eeac9f0abbe9631e4c9
+dangling blob 7108f7ecb345ee9d0084193f147cdad4d2998293
+
+$ git reflog
+$ git cherry-pick  SHA1                                                     #恢复删除的commit
+}}}
+= Case Study =
+ * Back to the status before latest commit
+{{{#!highlight python
+$ git status
+$ git reset HEAD^
+$ git status
+$ git checkout -- .
+}}}
+= Some Links =
+[[http://blog.jobbole.com/87700/|如何在 Git 里撤销(几乎)任何操作]]
+= Git book =
+For more detail information, please refer to [[attachment:git_pro_cn.pdf]].

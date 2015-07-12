@@ -1,0 +1,32 @@
+<<TableOfContents>>
+= From Nand to Tetris Part I =
+
+== Description ==
+[[http://www.nand2tetris.org/|The Nand to Tetris]] course takes you on a fascinating 7-week voyage of discovery in which you will go all the way from Boolean algebra and elementary logic gates to building a Central Processing Unit, a memory system, and a hardware platform, leading up to a general-purpose computer that can run any program that you fancy. In the process of building this computer you will become familiar with many important hardware abstractions, and you will implement them, hands on. But most of all, you will enjoy the tremendous thrill of building a complex and useful system from the ground up.
+== Homework & My Solution ==
+||<:> Week ||<:> Topic ||<:> Solution ||
+||<:> 0 ||<:> Introduction ||<:> [[attachment:00.zip]] ||
+||<:> 1 ||<:> Boolean Functions and Gate Logic ||<:> [[attachment:01.zip]] ||
+||<:> 2 ||<:> Boolean Arithmetic and the ALU ||<:> [[attachment:02.zip]] ||
+||<:> 3 ||<:> Memory ||<:> [[attachment:03.zip]] ||
+||<:> 4 ||<:> Machine Language ||<:> [[attachment:04.zip]] ||
+||<:> 5 ||<:> Computer Architecture ||<:> [[attachment:05.zip]] ||
+||<:> 6 ||<:> Assembler ||<:> [[attachment:assembler.cpp]] ||
+= C++ Programming Language =
+== Description ==
+[[http://www.xuetangx.com/courses/TsinghuaX/00740043X/2015_T1/info|C++ programming language basic]] and [[http://www.xuetangx.com/courses/TsinghuaX/00740043_2X/2015_T1/info/info|C++ programming language advance]].
+== Course Materials ==
+||[[attachment:Charpter 1 Preference.pdf]] ||
+||[[attachment:Charpter 2 C++ basic programming.pdf]] ||
+||[[attachment:Charpter 3 Function.pdf]] ||
+||[[attachment:Charpter 4 Classes and Objects.pdf]] ||
+||[[attachment:Charpter 5 Data share and protection.pdf]] ||
+||[[attachment:Charpter 6 Array Pointer and String (1).pdf]] ||
+||[[attachment:Charpter 6 Array Pointer and String (1).pdf]] ||
+||[[attachment:Charpter 7 Class Inheritage.pdf]] ||
+||[[attachment:Charpter 8 Polymorphism.pdf]] ||
+||[[attachment:Charpter 9 Template and Data set.pdf]] ||
+||[[attachment:Charpter 10 Template programming.pdf]] ||
+||[[attachment:Charpter 11 Stream class and IO.pdf]] ||
+||[[attachment:Charpter 12 Exception handling.pdf]] ||
+= Discussion =
